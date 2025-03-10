@@ -1,18 +1,17 @@
 import { Helmet } from 'react-helmet-async';
 import { TypeOffer } from '../../types/offers';
 import OffersList from '../../components/offers-list/offers-list';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Map from '../../components/map/map';
 import CitiesList from '../../components/cities-list/cities-list';
 import { CITIES } from '../../const';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { cityAction } from '../../store/action';
 import { filterOffersByCity, sortOffers } from '../../utils/utils';
 import { TypeCity } from '../../types/offers';
-import { offersAction } from '../../store/action';
 import PlacesSorting from '../../components/places-sorting/places-sorting';
 import { SortType } from '../../const';
-// import { Navigate } from 'react-router-dom';
+import { offersAction } from '../../store/offers-slice/offers-slice';
+import { cityAction } from '../../store/city-slice/city-slice';
 
 type MainScreenProps = {
   offers: TypeOffer[];
@@ -26,7 +25,7 @@ function MainScreen({ offers }: MainScreenProps): JSX.Element {
 
 
   const dispatch = useAppDispatch();
-  const listOffers = useAppSelector((state) => state.listOffers);
+  const listOffers = useAppSelector((state) => state.offers.listOffers);
 
   useEffect(() => {
     const filteredOffers: TypeOffer[] = filterOffersByCity(offers, selectedCity.name);
@@ -34,13 +33,13 @@ function MainScreen({ offers }: MainScreenProps): JSX.Element {
     dispatch(offersAction(sortedOffers));
   }, [selectedCity, offers, dispatch, selectedCity.name, selectedSort]);
 
-  const handleMouseOver = (id: string) => {
+  const handleMouseOver = useCallback((id: string) => {
     setSelectedCard(offers.find((offer) => offer.id === id));
-  };
+  }, [offers]);
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
     setSelectedCard(undefined);
-  };
+  }, []);
 
   const handleCityChange = (cityName: string) => {
     const newSelectesCity = CITIES.find((newCity) => newCity.name === cityName);
@@ -51,13 +50,9 @@ function MainScreen({ offers }: MainScreenProps): JSX.Element {
     }
   };
 
-  const handleClickSort = (sort: string) => {
+  const handleClickSort = useCallback((sort: string) => {
     setSelectedSort(sort);
-  };
-
-  // if (offers.length === 0) {
-  //   return
-  // }
+  }, []);
 
   return (
     <main className="page__main page__main--index">
