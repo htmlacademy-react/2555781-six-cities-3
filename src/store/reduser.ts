@@ -1,46 +1,16 @@
-import { createReducer } from '@reduxjs/toolkit';
-import { cityAction, loadOffers, offersAction, requireAuthorization, setError, setOffersDataLoadingStatus } from './action';
-import { TypeOffer } from '../types/offers';
-import { AuthorizationStatus } from '../const';
+import { combineReducers } from '@reduxjs/toolkit';
+import offersReducer from './offers-slice/offers-slice';
+import cityReducer from './city-slice/city-slice';
+import authReducer from './auth-slice/auth-slice';
+import errorReducer from './error-slice/error-slice';
+import userReduser from './user-slice/user-slice';
 
-type AppState = {
-  city: string;
-  listOffers: TypeOffer[];
-  offers: TypeOffer[];
-  authorizationStatus: AuthorizationStatus;
-  isOffersDataLoading: boolean;
-  error: string | null;
-}
-
-const initialState: AppState = {
-  city: '',
-  listOffers: [],
-  offers: [],
-  authorizationStatus: AuthorizationStatus.Unknown,
-  isOffersDataLoading: false,
-  error: null,
-};
-
-const reducer = createReducer(initialState, (builder) => {
-  builder
-    .addCase(cityAction, (state, action) => {
-      state.city = action.payload;
-    })
-    .addCase(offersAction, (state, action) => {
-      state.listOffers = action.payload;
-    })
-    .addCase(loadOffers, (state, action) => {
-      state.offers = action.payload;
-    })
-    .addCase(setOffersDataLoadingStatus, (state, action) => {
-      state.isOffersDataLoading = action.payload;
-    })
-    .addCase(requireAuthorization, (state, action) => {
-      state.authorizationStatus = action.payload;
-    })
-    .addCase(setError, (state, action) => {
-      state.error = action.payload;
-    });
+const rootReducer = combineReducers({
+  offers: offersReducer,
+  city: cityReducer,
+  auth: authReducer,
+  error: errorReducer,
+  user: userReduser,
 });
 
-export default reducer;
+export default rootReducer;
